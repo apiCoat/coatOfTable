@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
+import axios from "axios";
 
 const App = () => {
   
-  const [data, setData] = useState([]);
-
+  const [loading, setLoading] = useState(true);
+  const [data, setDatas] = useState([]);
   useEffect(() => {
-  async function getData() {
-    fetch(
-      "https://raw.githubusercontent.com/apiCoat/coatOfTable/master/src/data/data.json"
+    axios(
+      "https://raw.githubusercontent.com/apiCoat/coatOfTable/master/src/data.json"
     )
-      .then(function (response) {
-        return response.text();
-      })
-      .then(function (txt) {
-        let d = txt.replace(/first_name/g, `"First Name"`);
-        d = d.replace(/last_name/g, `"Last Name"`);
-        d = JSON.parse(d);
-        setData(d);
-      });
-  }
-  getData();
-  }, []); 
+      .then((res) => setDatas(res.data))
+      .catch((e) => console.log(e))
+      .finally(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -36,6 +28,7 @@ const App = () => {
       <MaterialTable title="coatOfTable"
                      data={data}
                      columns={columns}
+                     isLoading={loading}
                      options={{
                        search: true,
                        paging: true,
